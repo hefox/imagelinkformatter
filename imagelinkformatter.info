@@ -1,0 +1,6 @@
+name = Imagefield Link Formatter
+description = Formats a imagefield with a link field. 
+package = Content
+core = 6.x
+dependencies[] = link
+dependencies[] = imagefield

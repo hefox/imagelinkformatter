@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * Implementation of hook_field_formatter_info().
+ */
+function imagelinkformatter_field_formatter_info() {
+  $module_path = drupal_get_path('module', 'imagefield');
+  $all_formatters = array();
+  $formatters = array(
+    'imagelinkformatter' => array(
+      'label' => t('Image linked to '),
+      'field types' => array('filefield'),
+      'description' => t('Displays image files in their original size.'),
+    ),
+  );
+  foreach (imagecache_presets() as $preset) {
+    $formatters[$preset['presetname'] .'_imagelinkformatter'] = array(
+      'label' => t('@preset image linked to ', array('@preset' => $preset['presetname'])),
+      'field types' => array('filefield'),
+    );
+  }
+  foreach(imagelinkformatter_possiblities() as $field) {
+    foreach($formatters as $k => $info) {
+      $all_formatters[$k . '_' . $field] = $info;
+      $all_formatters[$k . '_' . $field]['label'] .=  $field ; 
+    }    
+  }
+  // go through foreach for each link type
+  return $all_formatters;
+}
+
+function imagelinkformatter_theme() {
+  $themes = array();
+  $theme['imagelinkformatter_formatter'] = array(
+      'arguments' => array('element' => NULL),
+      'file' => 'imagelinkformatter.themes.inc',
+    );
+  foreach (imagecache_presets() as $preset) {
+    $theme['imagelinkformatter_formatter_'. $preset['presetname'] .'_imagelinkformatter'] = array(
+      'arguments' => array('element' => NULL),
+      'function' => 'theme_imagelinkformatter_formatter_cache',
+      'file' => 'imagelinkformatter.themes.inc',
+    );
+  }
+  
+  $theme['imagelinkformatter_formatter_imagelinkformatter'] = array(
+    'arguments' => array('element' => NULL),
+    'function' => 'theme_imagelinkformatter_formatter_reg',
+    'file' => 'imagelinkformatter.themes.inc',
+  );
+  foreach(imagelinkformatter_possiblities() as $field) {
+    foreach($theme as $k => $info) {
+      $themes[$k . '_' . $field] = $info;
+    }
+  }
+  return $themes;
+}
+
+function imagelinkformatter_possiblities() {
+ static $possibilities = array();
+ if (empty($possibilities)) {
+  module_load_include('inc', 'content', 'includes/content.crud');
+    foreach (node_get_types('types', NULL, TRUE) as $type_name => $data) { 
+      // copied from _content_type_info since this info does not exist yet, as it's being gathered.
+      if ($fields = content_field_instance_read(array('type_name' => $type_name))) {
+        $potential_links = array();
+        foreach ($fields as $field) {      
+          if ($field['type'] == 'filefield') $i = 1;
+          if ($field['type'] == 'link') {
+            $l = 1; 
+            $potential_links[] =  substr($field['field_name'],6);
+          }
+        }  
+        if ($l + $i == 2)  $possibilities = $possibilities + $potential_links ; 
+      }  
+    }
+  }
+  return $possibilities;
+}
