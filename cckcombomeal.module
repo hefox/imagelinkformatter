@@ -47,3 +47,25 @@ function _cckcombomeal_get_field($element,$field_name) {
   return array();
 } 
 
+function _cckcombomeal_possiblities($type1,$type2) {
+ static $possibilities = array();
+ $p = $type1 . '_' . $type2;
+ if (empty($possibilities[$p])) {
+  module_load_include('inc', 'content', 'includes/content.crud');
+    foreach (node_get_types('types', NULL, TRUE) as $type_name => $data) { 
+      // copied from _content_type_info since this info does not exist yet, as it's being gathered.
+      if ($fields = content_field_instance_read(array('type_name' => $type_name))) {
+        $potential_links = array();
+        foreach ($fields as $field) {      
+          if ($field['type'] == $type1) $i = 1;
+          if ($field['type'] == $type2) {
+            $l = 1; 
+            $potential_links[] =  substr($field['field_name'],6);
+          }
+        }  
+        if ($l + $i == 2)  $possibilities[$p] = array_merge($possibilities[$p], $potential_links); 
+      }  
+    }
+  }
+  return $possibilities[$p];
+}

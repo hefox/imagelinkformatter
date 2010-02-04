@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implementation of hook_field_formatter_info().
+ */
+function textnoderefformatter_field_formatter_info() {
+  $module_path = drupal_get_path('module', 'imagefield');
+  $all_formatters = array();
+  $formatters = array(
+    'textnoderefformatter' => array(
+      'label' => t('Text linked to node ref field '),
+      'field types' => array('text'),
+      'description' => t('Text links to a node reference field in the same node'),
+    ),
+  );
+  foreach(_cckcombomeal_possiblities('filefield','nodereference')  as $field) {
+    foreach($formatters as $k => $info) {
+      $all_formatters[$k . '_' . $field] = $info;
+      $all_formatters[$k . '_' . $field]['label'] .=  $field ; 
+    }    
+  }
+
+  // go through foreach for each link type
+  return $all_formatters;
+}
+
+function textnoderefformatter_theme() {
+  $themes = array();
+  $theme['textnoderefformatter_formatter_textnoderefformatter'] = array(
+    'arguments' => array('element' => NULL),
+    'function' => 'theme_textnoderefformatter_formatter',
+    'file' => 'textnoderefformatter.themes.inc',
+  );
+  foreach(_cckcombomeal_possiblities('filefield','nodereference') as $field) {
+    foreach($theme as $k => $info) {
+      $themes[$k . '_' . $field] = $info;
+    }
+  }
+  return $themes;
+}

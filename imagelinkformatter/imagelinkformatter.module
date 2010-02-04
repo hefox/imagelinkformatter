@@ -19,7 +19,7 @@ function imagelinkformatter_field_formatter_info() {
       'field types' => array('filefield'),
     );
   }
-  foreach(imagelinkformatter_possiblities() as $field) {
+  foreach(_cckcombomeal_possiblities('filefield','link') as $field) {
     foreach($formatters as $k => $info) {
       $all_formatters[$k . '_' . $field] = $info;
       $all_formatters[$k . '_' . $field]['label'] .=  $field ; 
@@ -49,32 +49,10 @@ function imagelinkformatter_theme() {
     'function' => 'theme_imagelinkformatter_formatter_reg',
     'file' => 'imagelinkformatter.themes.inc',
   );
-  foreach(imagelinkformatter_possiblities() as $field) {
+  foreach(_cckcombomeal_possiblities('filefield','link') as $field) {
     foreach($theme as $k => $info) {
       $themes[$k . '_' . $field] = $info;
     }
   }
   return $themes;
-}
-
-function imagelinkformatter_possiblities() {
- static $possibilities = array();
- if (empty($possibilities)) {
-  module_load_include('inc', 'content', 'includes/content.crud');
-    foreach (node_get_types('types', NULL, TRUE) as $type_name => $data) { 
-      // copied from _content_type_info since this info does not exist yet, as it's being gathered.
-      if ($fields = content_field_instance_read(array('type_name' => $type_name))) {
-        $potential_links = array();
-        foreach ($fields as $field) {      
-          if ($field['type'] == 'filefield') $i = 1;
-          if ($field['type'] == 'link') {
-            $l = 1; 
-            $potential_links[] =  substr($field['field_name'],6);
-          }
-        }  
-        if ($l + $i == 2)  $possibilities = array_merge($possibilities, $potential_links); 
-      }  
-    }
-  }
-  return $possibilities;
 }

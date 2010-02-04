@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * Implementation of hook_field_formatter_info().
+ */
+function imagenoderefformatter_field_formatter_info() {
+  $module_path = drupal_get_path('module', 'imagefield');
+  $all_formatters = array();
+  $formatters = array(
+    'imagenoderefformatter' => array(
+      'label' => t('Image linked to node ref '),
+      'field types' => array('filefield'),
+      'description' => t('Displays image files in their original size.'),
+    ),
+  );
+  foreach (imagecache_presets() as $preset) {
+    $formatters[$preset['presetname'] .'_imagenoderefformatter'] = array(
+      'label' => t('@preset image linked to node ref ', array('@preset' => $preset['presetname'])),
+      'field types' => array('filefield'),
+    );
+  }
+  foreach(_cckcombomeal_possiblities('filefield','nodereference') as $field) {
+    foreach($formatters as $k => $info) {
+      $all_formatters[$k . '_' . $field] = $info;
+      $all_formatters[$k . '_' . $field]['label'] .=  $field ; 
+    }    
+  }
+
+  // go through foreach for each link type
+  return $all_formatters;
+}
+
+function imagenoderefformatter_theme() {
+  $themes = array();
+
+  foreach (imagecache_presets() as $preset) {
+    $theme['imagenoderefformatter_formatter_'. $preset['presetname'] .'_imagenoderefformatter'] = array(
+      'arguments' => array('element' => NULL),
+      'function' => 'theme_imagenoderefformatter_formatter_cache',
+      'file' => 'imagenoderefformatter.themes.inc',
+    );
+  }
+  
+  $theme['imagenoderefformatter_formatter_imagenoderefformatter'] = array(
+    'arguments' => array('element' => NULL),
+    'function' => 'theme_imagenoderefformatter_formatter_reg',
+    'file' => 'imagenoderefformatter.themes.inc',
+  );
+  foreach(_cckcombomeal_possiblities('filefield','nodereference') as $field) {
+    foreach($theme as $k => $info) {
+      $themes[$k . '_' . $field] = $info;
+    }
+  }
+  return $themes;
+}
+

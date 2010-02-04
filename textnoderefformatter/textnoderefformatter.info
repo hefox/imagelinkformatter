@@ -1,0 +1,8 @@
+name = Text node reference formatter Formatter
+description = Formats a text field with as a link to a node reference in the same field. 
+package = Content
+core = 6.x
+dependencies[] = text
+dependencies[] = nodereference
+dependencies[] = cckcombomeal
+package = Formatters
