@@ -25,6 +25,7 @@ function imagelinkformatter_field_formatter_info() {
       $all_formatters[$k . '_' . $field]['label'] .=  $field ; 
     }    
   }
+
   // go through foreach for each link type
   return $all_formatters;
 }
@@ -71,7 +72,7 @@ function imagelinkformatter_possiblities() {
             $potential_links[] =  substr($field['field_name'],6);
           }
         }  
-        if ($l + $i == 2)  $possibilities = $possibilities + $potential_links ; 
+        if ($l + $i == 2)  $possibilities = array_merge($possibilities, $potential_links); 
       }  
     }
   }

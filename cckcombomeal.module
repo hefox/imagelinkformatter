@@ -1,0 +1,49 @@
+<?php
+
+/*Get the values for a node/field*/
+function _cckcombomeal_get_field($element,$field_name) {
+  static $tables  = array(),$columns = array(),$multi = array();
+  $node = $element['#node'];
+  $delta = $element['#item']['#delta'];
+  if (empty($delta)) $delta = 0;
+  
+  if (!isset($node->{$field_name}) && $node->nid && $node->type) {
+    
+    if (!$tables[$node->type]) {
+      $type_info =  content_types($node->type);
+      $tables[$node->type] = $type_info['tables'];
+      
+    }
+    if (!$columns[$field_name]) {
+      if (!$type_info)   $type_info =  $tables[$node->type];
+      $pl = array();
+      if (!$type_info['fields'][$field_name]) return array();
+      foreach($type_info['fields'][$field_name]['columns'] as $k => $column) {
+        $columns[$field_name][$k] = $field_name . '_'. $k;
+      }
+      if (!$columns[$field_name]) return array();
+      $multi[$field_name] = $type_info['fields'][$field_name]['multiple'];
+    }
+    if ($multi[$field_name]) $add = ' and delta= ' . $delta ; //fixme :(
+    if (in_array('content_'.$field_name,$tables[$node->type])) {
+      $table = 'content_' .$field_name;
+      
+    } else {
+      $table = 'content_type_' . $node->type;
+    }
+    $args = array($table,$node->vid);
+    
+    $result = db_query('SELECT ' . implode(', ',$columns[$field_name]) . ' from %s where vid = %d ' . $add,$args);
+    $values = array();
+    if($row = db_fetch_array($result)){
+      foreach($columns[$field_name] as $k => $field) $values[$k] = $row[$field];  
+    }
+    return $values;
+  }
+  elseif ($node->{$field_name}) {
+    $v = $node->{$field_name};
+    return $v[$delta]; 
+  }
+  return array();
+} 
+

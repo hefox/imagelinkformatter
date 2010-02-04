@@ -1,0 +1,5 @@
+name = CCK combo meal
+description = Base module for modules that combine two cck fields to form their output. 
+package = Content
+core = 6.x
+package = Formatters 
