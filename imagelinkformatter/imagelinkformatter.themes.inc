@@ -22,9 +22,7 @@ function theme_imagelinkformatter_formatter_cache($element) {
   
   // Render items.
   $class = "imagelinkcache imagelinkcache-$presetname imagelinkcache-$style imagelinkcache-{$element['#formatter']}";
-  
-  drupal_set_message(print_r($values,1));
-  
+ 
   if (!$v['url']) return $imagetag; 
   else return l($imagetag, $v['url'], array('attributes' => array('class' => $class), 'html' => TRUE));
 }
