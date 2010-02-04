@@ -1,0 +1,8 @@
+name = Image node reference Formatter
+description = Formats a image field with as a link to a node reference in the same node. 
+package = Content
+core = 6.x
+dependencies[] = imagefield
+dependencies[] = nodereference
+dependencies[] = cckcombomeal
+package = Formatters

@@ -51,6 +51,7 @@ function _cckcombomeal_possiblities($type1,$type2) {
  static $possibilities = array();
  $p = $type1 . '_' . $type2;
  if (empty($possibilities[$p])) {
+  $possibilities[$p] = array();
   module_load_include('inc', 'content', 'includes/content.crud');
     foreach (node_get_types('types', NULL, TRUE) as $type_name => $data) { 
       // copied from _content_type_info since this info does not exist yet, as it's being gathered.
